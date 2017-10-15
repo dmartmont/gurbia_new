@@ -4,7 +4,7 @@ import {
     StyleSheet
 } from 'react-native';
 
-export default class Profile extends React.Component {
+export default class ProfileScreen extends React.Component {
     constructor(props) {
         super(props);
     }

@@ -2,7 +2,6 @@ import React from "react";
 import {
     View,
     Image,
-    KeyboardAvoidingView,
     StyleSheet
 } from "react-native";
 import {
@@ -11,19 +10,48 @@ import {
     FormLabel,
     FormInput
 } from "react-native-elements";
+import { NavigationActions } from 'react-navigation';
 
-export default class SignIn extends React.Component {
+import Database from '../database/database';
+import { onSignIn } from '../auth';
+
+export default class SignInScreen extends React.Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            email: '',
+            password: ''
+        }
     }
 
     static navigationOptions = {
         header: null
     }
 
+    onSignIn() {
+        if (this.state.email && this.state.password) {
+            let user = Database.loginUser(this.state.email, this.state.password);
+            if (user) {
+                onSignIn(this.state.email + ':' + this.state.password);
+
+                const resetAction = NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: 'SignedIn' })
+                    ]
+                });
+                this.props.screenProps.parentNavigation.dispatch(resetAction);
+            } else {
+                alert('Email or password not found.');
+            }
+        } else {
+            alert('Please enter your email and password.')
+        }
+    }
+
     render() {
         const { navigate } = this.props.navigation;
-        console.log(this.props);
 
         return (
             <View style={styles.container}>
@@ -32,9 +60,14 @@ export default class SignIn extends React.Component {
                     containerStyle={styles.card} >
 
                     <FormLabel>Email</FormLabel>
-                    <FormInput placeholder="Email address..." />
+                    <FormInput
+                        placeholder="Email address..."
+                        onChangeText={(email) => this.setState({ email })} />
                     <FormLabel>Password</FormLabel>
-                    <FormInput secureTextEntry placeholder="Password..." />
+                    <FormInput
+                        secureTextEntry
+                        placeholder="Password..."
+                        onChangeText={(password) => this.setState({ password })} />
                     <Button
                         title="SIGN IN"
                         raised
@@ -43,7 +76,7 @@ export default class SignIn extends React.Component {
                             padding: 10
                         }}
                         icon={{ name: 'send' }}
-                        onPress={() => navigate("SignedIn")}
+                        onPress={() => this.onSignIn()}
                     />
                     <Button
                         title="SIGN UP"

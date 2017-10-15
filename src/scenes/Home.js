@@ -1,65 +1,111 @@
-import React from 'react';
-import { Button, Platform, ScrollView, StyleSheet } from 'react-native';
-import { DrawerNavigator } from 'react-navigation';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React, { Component } from 'react';
+import {
+    View,
+    Text,
+    Image,
+    BackAndroid,
+    ScrollView,
+    TouchableOpacity,
+    StyleSheet
+} from 'react-native';
+import ActionButton from 'react-native-action-button';
 
-const MyNavScreen = ({ navigation, banner }) => (
-    <ScrollView style={styles.container}>
-        <Button
-            onPress={() => navigation.navigate('DrawerOpen')}
-            title="Open drawer"
-        />
-        <Button onPress={() => navigation.goBack(null)} title="Go back" />
-    </ScrollView>
-);
+import Navbar from './../components/Navbar';
+import Post from './../components/Post';
+import Database from './../database/database';
 
-const InboxScreen = ({ navigation }) => (
-    <MyNavScreen banner={'Inbox Screen'} navigation={navigation} />
-);
-InboxScreen.navigationOptions = {
-    drawerLabel: 'Inbox',
-    drawerIcon: ({ tintColor }) => (
-        <MaterialIcons
-            name="move-to-inbox"
-            size={24}
-            style={{ color: tintColor }}
-        />
-    ),
-};
+export default class HomeScene extends Component {
+    constructor(props) {
+        super(props);
 
-const DraftsScreen = ({ navigation }) => (
-    <MyNavScreen banner={'Drafts Screen'} navigation={navigation} />
-);
-DraftsScreen.navigationOptions = {
-    drawerLabel: 'Drafts',
-    drawerIcon: ({ tintColor }) => (
-        <MaterialIcons name="drafts" size={24} style={{ color: tintColor }} />
-    ),
-};
+        this.state = {
+            data: {}
+        };
 
-const DrawerExample = DrawerNavigator(
-    {
-        Inbox: {
-            path: '/',
-            screen: InboxScreen,
-        },
-        Drafts: {
-            path: '/sent',
-            screen: DraftsScreen,
-        },
-    },
-    {
-        initialRouteName: 'Drafts',
-        contentOptions: {
-            activeTintColor: '#e91e63',
-        },
+        this.navigate = this.navigate.bind(this);
     }
-);
+
+    componentWillMount() {
+        this.fetchPosts().then(data => {
+            this.setState({
+                data: data
+            });
+        });
+    }
+
+    navigate(id) {
+        this.props.navigator.push({ id });
+    }
+
+    async fetchPosts() {
+        var data = await Database.getPosts();
+        return data;
+    }
+
+    formatData = () => {
+        let postData = [];
+        for (var i in this.state.data) {
+            postData.push({
+                key: i,
+                data: this.state.data[i]
+            })
+        }
+        return postData;
+    }
+
+    render() {
+        closeDrawer = () => {
+            this._drawer.close()
+        };
+        openDrawer = () => {
+            this._drawer.open()
+        };
+
+        const posts = this.formatData();
+        const postsComponents = posts.map(data => {
+            return (
+                <Post
+                    info={{ ...data.data, key: data.key }}
+                    key={data.key}
+                    navigator={this.props.navigator}
+                />
+            )
+        });
+
+        return (
+
+            <View style={styles.container}>
+                <Navbar
+                    onpressnav={() => openDrawer()}
+                    type='Home'
+                />
+                <ScrollView style={styles.postsList}>
+                    {postsComponents}
+                </ScrollView>
+                <ActionButton
+                    buttonColor='rgba(255, 87, 34, 1)'
+                    onPress={() => this.navigate('CreatePost')}
+                />
+            </View>
+        )
+    }
+}
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: Platform.OS === 'ios' ? 20 : 0,
+        backgroundColor: '#ffffff',
+        flex: 1,
     },
-});
+    postsList: {
+        padding: 5,
+        backgroundColor: '#DDDDDD'
+    }
+})
 
-export default DrawerExample;
+BackAndroid.addEventListener('hardwareBackPress', () => {
+    if (_navigator.getCurrentRoutes().length === 1) {
+        return false;
+    }
+    _navigator.pop();
+    return true;
+});

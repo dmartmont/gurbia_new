@@ -11,14 +11,19 @@ import {
     FormInput
 } from 'react-native-elements';
 
-export default class SignUp extends React.Component {
+import Database from '../database/database';
+
+export default class SignUpScreen extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+
+        }
     }
 
     static navigationOptions = {
         headerTitle: "Sign Up",
-        headerBackTitle: "",
         headerStyle: {
             backgroundColor: "#E64A19",
         },
@@ -30,88 +35,86 @@ export default class SignUp extends React.Component {
         }
     }
 
-    // validateEmail = (email) => {
-    //     var regexp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    //     return regexp.test(email);
-    // };
+    validateEmail = (email) => {
+        var regexp = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return regexp.test(email);
+    };
 
-    // validatePassword(password) {
-    //     return password.length > 5 ? true : false;
-    // }
+    validatePassword(password) {
+        return password.length > 5;
+    }
 
-    // handleFormSubmit() {
-    //     try {
-    //         if (this.state.email == 'cuatroBabys@malumita.com') {
-    //             const cuatro = new Sound('cuatrobabys.mp3', Sound.MAIN_BUNDLE, (error) => {
-    //                 if (error) {
-    //                     console.log('soy el error');
-    //                     return;
-    //                 }
-    //                 cuatro.play();
-    //                 cuatro.setVolume(1);
-    //             });
-    //         } else {
-    //             if (this.validateEmail(this.state.email)) {
-    //                 Database.loginUser(this.state.email, this.state.password).then(res => {
-    //                     if (res) this.navigate('Home');
-    //                 });
-    //             }
-    //             else {
-    //                 alert('Malformed email');
-    //             }
-    //         }
-    //     }
-    //     catch (error) {
-    //         console.log('Error: ', error);
-    //     }
-    // }
+    handleFormSubmit() {
+        try {
+            if (!this.validateEmail(this.state.email)) {
+                alert('Please enter a valid email.');
+            } else if (!this.validatePassword(this.state.password)) {
+                alert('The password must be at least 6 characters long.');
+            } else {
+                Database.createUser(
+                    this.state.firstname,
+                    this.state.lastname,
+                    this.state.email,
+                    this.state.password
+                );
+
+                const resetAction = NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: 'SignedIn' })
+                    ]
+                });
+                this.props.screenProps.parentNavigation.dispatch(resetAction);
+            }
+        } catch (err) {
+            alert('Error creando usuario', err);
+        }
+    }
 
     render() {
         const { navigate } = this.props.navigation;
 
         return (
-            <Card>
-                <FormLabel>FIRSTNAME</FormLabel>
-                <FormInput
-                    //ref={(firstname) => this.setState({ firstname })}
-                    placeholder="Please enter your firstname..."
-                />
-                <FormLabel>LASTNAME</FormLabel>
-                <FormInput
-                    //ref={(lastname) => this.setState({ lastname })}
-                    placeholder="Please enter your lastname..."
-                />
-                <FormLabel>EMAIL</FormLabel>
-                <FormInput
-                    //ref={(email) => this.setState({ email })}
-                    placeholder="Please enter your email..."
-                />
-                <FormLabel>PASSWORD</FormLabel>
-                <FormInput
-                    //ref={(password) => this.setState({ password })}
-                    placeholder="Please enter a password..."
-                />
-                <Button
-                    title="SIGN UP"
-                    raised
-                    icon={{ name: 'create' }}
-                    buttonStyle={{ backgroundColor: "#F57C00" }}
-                    onPress={() => navigate('SignedIn')}
-                />
-            </Card>
+            <View style={styles.container} >
+                <Card>
+                    <FormLabel>FIRSTNAME</FormLabel>
+                    <FormInput
+                        onChangeText={(firstname) => this.setState({ firstname })}
+                        placeholder="Please enter your firstname..."
+                    />
+                    <FormLabel>LASTNAME</FormLabel>
+                    <FormInput
+                        onChangeText={(lastname) => this.setState({ lastname })}
+                        placeholder="Please enter your lastname..."
+                    />
+                    <FormLabel>EMAIL</FormLabel>
+                    <FormInput
+                        onChangeText={(email) => this.setState({ email })}
+                        placeholder="Please enter your email..."
+                    />
+                    <FormLabel>PASSWORD</FormLabel>
+                    <FormInput
+                        onChangeText={(password) => this.setState({ password })}
+                        secureTextEntry
+                        placeholder="Please enter a password..."
+                    />
+                    <Button
+                        title="SIGN UP"
+                        raised
+                        icon={{ name: 'create' }}
+                        buttonStyle={{ backgroundColor: "#F57C00" }}
+                        onPress={() => this.handleFormSubmit()}
+                    />
+                </Card >
+            </View >
         )
     }
 }
 
 const styles = StyleSheet.create({
-    formContainer: {
+    container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'stretch',
-        paddingTop: 0,
-        paddingRight: 15,
-        paddingBottom: 0,
-        paddingLeft: 15,
-        backgroundColor: '#fff'
+        justifyContent: 'flex-start',
+        padding: 0
     }
 })
