@@ -1,28 +1,23 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import {
   View,
   Image,
   Text,
   TouchableOpacity,
   StyleSheet
-} from 'react-native'
-import StarRating from 'react-native-star-rating'
+} from 'react-native';
+import { NavigationActions } from 'react-navigation';
+import StarRating from 'react-native-star-rating';
 
-import Database from './../database/database'
+import Database from './../database/database';
 
 export default class Post extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
       starCount: 0
-    }
-
-    this.navigate = this.navigate.bind(this);
-  }
-
-  navigate({ id, data }) {
-    this.props.navigator.push({ id, data })
+    };
   }
 
   componentWillMount() {
@@ -38,13 +33,20 @@ export default class Post extends Component {
     return rate;
   }
 
+  navigate(data) {
+    const navigateAction = NavigationActions.navigate({
+      routeName: 'Post',
+      params: data
+    });
+    this.props.navigation.dispatch(navigateAction);
+  }
+
   render() {
     return (
       <TouchableOpacity
         style={styles.postContainer}
         activeOpacity={0.8}
         onPress={() => this.navigate({
-          id: 'PostView',
           data: { ...this.props.info, rate: this.state.starCount }
         })}
       >
@@ -84,22 +86,17 @@ export default class Post extends Component {
 
 const styles = StyleSheet.create({
   postContainer: {
-    padding: 5,
-    margin: 5,
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: '#BDBDBD',
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
+    marginBottom: 10,
+    elevation: 3
   },
   imageContainer: {
     backgroundColor: '#CDCDCD',
-    padding: 1,
     alignItems: 'center',
-    borderRadius: 5,
   },
   postImage: {
     height: 200,
-    width: 250,
+    width: 350,
   },
   infoContainer: {
     padding: 5,

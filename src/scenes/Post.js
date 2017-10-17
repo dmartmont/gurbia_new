@@ -10,14 +10,17 @@ import {
 import StarRating from 'react-native-star-rating'
 import ActionButton from 'react-native-action-button'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import Database from './../../database/database'
+import Database from './../database/database'
 
+import Navbar from './../components/Navbar'
 
-import Navbar from './../../components/Navbar/Navbar'
-
-export default class PostView extends Component {
+export default class PostScreen extends Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      ...this.props.navigation.state.params.data
+    }
 
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -28,38 +31,38 @@ export default class PostView extends Component {
       user.displayName,
       user.email,
       user.uid,
-      this.props.data.key,
-      this.props.data.uid);
+      this.state.key,
+      this.state.uid);
   }
 
   render() {
-    const pedidos = (this.props.data.subscribedUsers == undefined) ?
+    const pedidos = (this.state.subscribedUsers == undefined) ?
       0 :
-      Object.keys(this.props.data.subscribedUsers).length;
+      Object.keys(this.state.subscribedUsers).length;
 
     return (
       <View style={styles.container}>
         <Navbar
-          onpressnav={() => _navigator.pop()}
-          type=''
+          onpressLeft={() => this.props.navigation.goBack()}
+          iconLeft='close'
         />
         <View style={styles.imageContainer}>
           <Image
-            source={{ uri: this.props.data.picture }}
+            source={{ uri: this.state.picture }}
             style={styles.postImage}
           />
         </View>
         <View style={styles.infoContainer}>
           <View style={styles.principalInfoContainer}>
             <View>
-              <Text style={styles.foodNameText}>{this.props.data.title}</Text>
-              <Text style={styles.usernameText}>{this.props.data.authorName}</Text>
+              <Text style={styles.foodNameText}>{this.state.title}</Text>
+              <Text style={styles.usernameText}>{this.state.authorName}</Text>
             </View>
             <View style={styles.rateContainer}>
               <StarRating
                 disabled={true}
                 maxStars={5}
-                rating={this.props.data.rate}
+                rating={this.state.rate}
                 starColor={'#D32F2F'}
                 emptyStarColor={'#f2828a'}
                 starSize={30}
@@ -69,14 +72,14 @@ export default class PostView extends Component {
           <View style={styles.foodInfoContainer}>
             <View style={styles.pricingContainer}>
               <Text style={styles.priceText}>
-                <Text style={{ fontWeight: 'bold' }}>Price:</Text> {this.props.data.price}
+                <Text style={{ fontWeight: 'bold' }}>Price:</Text> {this.state.price}
               </Text>
               <Text style={styles.priceText}>
                 <Text style={{ fontWeight: 'bold' }}>Portions:</Text>
-                {pedidos}/{this.props.data.portions}</Text>
+                {pedidos}/{this.state.portions}</Text>
             </View>
             <Text style={styles.foodDescription}>
-              {this.props.data.description}
+              {this.state.description}
             </Text>
           </View>
         </View>
@@ -109,12 +112,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#CDCDCD',
     alignItems: 'center',
     margin: 10,
-    borderRadius: 5,
     marginBottom: 10,
   },
   postImage: {
     height: 300,
-    width: 250,
+    width: 450,
   },
   infoContainer: {
     padding: 10,

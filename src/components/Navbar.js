@@ -13,24 +13,24 @@ export default class Navbar extends Component {
   }
 
   render() {
-    return(
+    return (
       <View style={styles.navContainer}>
-        <View style={[styles.buttonContainer, {marginLeft: 3}]}>
+        <View style={[styles.buttonContainer, { marginLeft: 3 }]}>
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.7}
-            onPress={this.props.onpressnav}
+            onPress={this.props.onpressLeft}
           >
-            <Icon name={((this.props.type == 'Home') ? 'menu' : 'arrow-back')} size={32} color='#FFF'/>
+            <Icon name={this.props.iconLeft} size={32} color='#FFF' />
           </TouchableOpacity>
         </View>
-        <View style={[styles.buttonContainer, {marginRight: 5}]}>
+        <View style={[styles.buttonContainer, { marginRight: 5 }]}>
           <TouchableOpacity
             style={styles.button}
             activeOpacity={0.7}
-            onPress={this.props.onpressearch}
+            onPress={this.props.onpressRight}
           >
-            <Icon name={((this.props.type == 'Home') ? 'search' : 'more-vert')} size={32} color='#FFF'/>
+            <Icon name={this.props.iconRight} size={32} color='#FFF' />
           </TouchableOpacity>
         </View>
       </View>
@@ -39,12 +39,13 @@ export default class Navbar extends Component {
 }
 
 const styles = StyleSheet.create({
-  navContainer:{
+  navContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#F44336',
-    height: 50
+    height: 50,
+    elevation: 5
   },
   buttonContainer: {
     alignItems: 'center',

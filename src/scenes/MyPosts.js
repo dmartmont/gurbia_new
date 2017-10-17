@@ -3,46 +3,53 @@ import {
   View,
   Text,
   Image,
+  BackAndroid,
   ScrollView,
   TouchableOpacity,
   StyleSheet
 } from 'react-native';
-import ActionButton from 'react-native-action-button';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { List } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Navbar from './../components/Navbar';
-import Post from './../components/Post';
 import Database from './../database/database';
+import PostSubscriptions from './../components/PostSubscriptions';
 
-export default class HomeScene extends Component {
+export default class MyPostsScreen extends Component {
   static navigationOptions = {
-    drawerLabel: 'Home',
+    drawerLabel: 'My Posts',
     drawerIcon: ({ focused }) => {
       const col = focused ? '#c62828' : '#BDBDBD';
       return (<View>
-        <Icon name="home" size={25} color={col} />
-      </View>);
+        <Icon name="food-variant" size={25} color={col} />
+      </View >);
     },
   };
 
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       data: {}
-    };
+    }
+
+    this.navigate = this.navigate.bind(this);
   }
 
   componentWillMount() {
     this.fetchPosts().then(data => {
       this.setState({
         data: data
-      });
+      })
     });
   }
 
+  navigate(id) {
+    this.props.navigator.push({ id });
+  }
+
   async fetchPosts() {
-    var data = await Database.getPosts();
+    var data = await Database.getUserPosts();
     return data;
   }
 
@@ -59,31 +66,27 @@ export default class HomeScene extends Component {
 
   render() {
     const posts = this.formatData();
+    console.log('Mis posts', posts);
     const postsComponents = posts.map(data => {
       return (
-        <Post
-          info={{ ...data.data, key: data.key }}
+        <PostSubscriptions
+          info={{ ...data.data }}
           key={data.key}
           navigation={this.props.navigation}
         />
       )
     });
-
     return (
-
       <View style={styles.container}>
         <Navbar
           onpressLeft={() => this.props.navigation.navigate('DrawerOpen')}
           iconLeft='menu'
-          iconRight='search'
         />
         <ScrollView style={styles.postsList}>
-          {postsComponents}
+          <List>
+            {postsComponents}
+          </List>
         </ScrollView>
-        <ActionButton
-          buttonColor='rgba(255, 87, 34, 1)'
-          onPress={() => this.props.navigation.navigate('NewPost')}
-        />
       </View>
     )
   }
@@ -95,7 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postsList: {
-    padding: 10,
+    padding: 5,
     backgroundColor: '#DDDDDD'
   }
 })
