@@ -87,7 +87,7 @@ export default class Post extends Component {
 const styles = StyleSheet.create({
   postContainer: {
     backgroundColor: '#FFFFFF',
-    marginBottom: 10,
+    margin: 10,
     elevation: 3
   },
   imageContainer: {

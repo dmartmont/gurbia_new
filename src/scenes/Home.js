@@ -39,10 +39,22 @@ export default class HomeScene extends Component {
         data: data
       });
     });
+
+    this.fetchRecommendations().then(data => {
+      this.setState({
+        ...this.state,
+        recommendations: data
+      });
+    });
   }
 
   async fetchPosts() {
     var data = await Database.getPosts();
+    return data;
+  }
+
+  async fetchRecommendations() {
+    var data = await Database.getRecommendedPosts();
     return data;
   }
 
@@ -57,8 +69,21 @@ export default class HomeScene extends Component {
     return postData;
   }
 
+  formatRecommendations = () => {
+    let postData = [];
+    for (var i in this.state.recommendations) {
+      postData.push({
+        key: i,
+        data: this.state.recommendations[i]
+      })
+    }
+    return postData;
+  }
+
   render() {
     const posts = this.formatData();
+    const recommendations = this.formatRecommendations();
+
     const postsComponents = posts.map(data => {
       return (
         <Post
@@ -69,15 +94,41 @@ export default class HomeScene extends Component {
       )
     });
 
-    return (
+    const recommendationsComponents = recommendations.map(data => {
+      return (
+        <View
+          key={data.key}
+          style={{ marginLeft: 5, marginRight: 5 }}>
+          <Post
+            info={{ ...data.data, key: data.key }}
+            navigation={this.props.navigation}
+          />
+        </View>
+      )
+    });
 
+    console.log('Recomendaciones', recommendations);
+    return (
       <View style={styles.container}>
         <Navbar
           onpressLeft={() => this.props.navigation.navigate('DrawerOpen')}
           iconLeft='menu'
           iconRight='search'
         />
-        <ScrollView style={styles.postsList}>
+        <ScrollView
+          style={styles.postsList}>
+          <View style={styles.recommendationsContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.titleText}>
+                Some recommendations for you.
+            </Text>
+            </View>
+            <ScrollView
+              horizontal
+            >
+              {recommendationsComponents}
+            </ScrollView>
+          </View>
           {postsComponents}
         </ScrollView>
         <ActionButton
@@ -95,7 +146,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   postsList: {
-    padding: 10,
     backgroundColor: '#DDDDDD'
+  },
+  recommendationsContainer: {
+    backgroundColor: '#FFF',
+    elevation: 3
+  },
+  titleContainer: {
+    marginLeft: 10,
+    marginTop: 10
+  },
+  titleText: {
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontSize: 18
   }
 })
