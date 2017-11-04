@@ -85,7 +85,7 @@ export default class Database {
           subscribedUsers: {}
         };
 
-        let response = await fetch('https://backgurbia.herokuapp.com/getTags', {
+        var response = await fetch('https://backgurbia.herokuapp.com/getTags', {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
