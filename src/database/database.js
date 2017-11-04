@@ -85,12 +85,28 @@ export default class Database {
           subscribedUsers: {}
         };
 
+        let response = await fetch('https://backgurbia.herokuapp.com/getTags', {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            description: description
+          })
+        }).catch(err => {
+          console.error(err);
+        });   
+
         var updates = {};
         updates['posts/' + newPostKey] = postData;
-        updates['user-posts/' + user.uid + '/' + newPostKey] = postData;
-
+        updates['user-posts/' + user.uid + '/' + newPostKey] = postData; 
+        response.tags.forEach(elem => {
+          updates['posts-by-tags/' + elem + '/' + newPostKey] = postData;
+        });
+        
         firebase.database().ref().update(updates);
-      })
+      });
   }
 
   static updateProfileFireBase(name, email, picture) {
@@ -245,8 +261,8 @@ export default class Database {
         })
         .catch(err => {
           reject(err)
-        });
-    })
+        })
+    });
   }
 
   static getUser() {
@@ -256,6 +272,18 @@ export default class Database {
   static getUserRate(uid) {
     return new Promise((resolve, reject) => {
       firebase.database().ref('users/' + uid)
+        .once('value').then((data) => {
+          resolve(data.val());
+        }).catch(error => {
+          reject(error);
+        })
+    })
+  }
+
+  static getPostsByTag(tag) {
+    var posts = [];
+    return new Promise((resolve, reject) => {
+      firebase.database().ref('posts/' + tag).limitToLast(20)
         .once('value').then((data) => {
           resolve(data.val());
         }).catch(error => {
