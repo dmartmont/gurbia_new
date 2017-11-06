@@ -87,12 +87,29 @@ export default class Database {
 
         var updates = {};
         updates['posts/' + newPostKey] = postData;
-        updates['user-posts/' + user.uid + '/' + newPostKey] = postData;
+
+        updates['user-posts/' + user.uid + '/' + newPostKey] = postData; 
         tags.forEach(tag => {
           updates['posts-by-tags/' + tag] = postData
         });
         firebase.database().ref().update(updates);
       });
+  }
+
+  static getSuggestedTags(description) {
+    var response = await fetch('https://backgurbia.herokuapp.com/getTags', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        description: description
+      })
+    }).catch(err => {
+      console.error(err);
+    });
+    return response.tags;
   }
 
   static updateProfileFireBase(name, email, picture) {
