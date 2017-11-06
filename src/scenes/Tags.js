@@ -57,7 +57,19 @@ export default class TagsScene extends Component {
   }
 
   handleFormSubmit() {
-    console.log(this.props)
+    try {
+      Database.writePost(
+        this.props.navigation.state.params.imagePath,
+        this.props.navigation.state.params.title,
+        this.props.navigation.state.params.description,
+        this.props.navigation.state.params.location,
+        this.props.navigation.state.params.portions,
+        this.props.navigation.state.params.price,
+        finalList
+      );
+    } catch (error) {
+      console.log('Error ', error);
+    }
   }
 
   sym(...arrays) {
