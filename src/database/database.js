@@ -68,7 +68,7 @@ export default class Database {
     })
   }
 
-  static writePost(picture, title, description, location, portions, price) {
+  static writePost(picture, title, description, location, portions, price, tags) {
     this.uploadImage(picture, 'Food')
       .then(res => {
         var user = firebase.auth().currentUser;
@@ -85,26 +85,12 @@ export default class Database {
           subscribedUsers: {}
         };
 
-        var response = await fetch('https://backgurbia.herokuapp.com/getTags', {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          method: 'POST',
-          body: JSON.stringify({
-            description: description
-          })
-        }).catch(err => {
-          console.error(err);
-        });   
-
         var updates = {};
         updates['posts/' + newPostKey] = postData;
-        updates['user-posts/' + user.uid + '/' + newPostKey] = postData; 
-        response.tags.forEach(elem => {
-          updates['posts-by-tags/' + elem + '/' + newPostKey] = postData;
+        updates['user-posts/' + user.uid + '/' + newPostKey] = postData;
+        tags.forEach(tag => {
+          updates['posts-by-tags/' + tag] = postData
         });
-        
         firebase.database().ref().update(updates);
       });
   }
@@ -290,5 +276,22 @@ export default class Database {
           reject(error);
         })
     })
+  }
+
+
+  static async getRecommendedTags(description) {
+    var response = await fetch('https://backgurbia.herokuapp.com/getTags', {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        description: description
+      })
+    }).catch(err => {
+      console.error(err);
+    });
+    return JSON.parse(response._bodyText).tags;
   }
 }

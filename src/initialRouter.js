@@ -12,6 +12,7 @@ import PostScreen from './scenes/Post';
 import NewPostScreen from './scenes/NewPost';
 import ProfileScreen from './scenes/Profile';
 import EditProfileScreen from './scenes/EditProfile';
+import TagsScreen from './scenes/Tags'
 
 import MyPostsScreen from './scenes/MyPosts';
 import OrdersScreen from './scenes/Orders';
@@ -40,6 +41,9 @@ const HomeNavigator = StackNavigator({
   },
   NewPost: {
     screen: NewPostScreen
+  },
+  Tags: {
+    screen: TagsScreen
   }
 }, {
     headerMode: 'none'
