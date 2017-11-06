@@ -65,8 +65,9 @@ export default class TagsScene extends Component {
         this.props.navigation.state.params.location,
         this.props.navigation.state.params.portions,
         this.props.navigation.state.params.price,
-        finalList
+        this.state.finalList
       );
+      this.props.navigation.navigate('Home')
     } catch (error) {
       console.log('Error ', error);
     }
