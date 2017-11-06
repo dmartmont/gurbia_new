@@ -48,7 +48,7 @@ export default class CreatePost extends Component {
                   title:this.state.title,
                   description:this.state.description,
                   location: this.state.location,
-                  portions: this.state.prtions,
+                  portions: this.state.portions,
                   price:this.state.portions,
                   recTags: this.state.recTags}
         })

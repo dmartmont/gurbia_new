@@ -88,7 +88,7 @@ export default class Database {
         var updates = {};
         updates['posts/' + newPostKey] = postData;
 
-        updates['user-posts/' + user.uid + '/' + newPostKey] = postData; 
+        updates['user-posts/' + user.uid + '/' + newPostKey] = postData;
         tags.forEach(tag => {
           updates['posts-by-tags/' + tag] = postData
         });
@@ -96,7 +96,7 @@ export default class Database {
       });
   }
 
-  static getSuggestedTags(description) {
+  static async getSuggestedTags(description) {
     var response = await fetch('https://backgurbia.herokuapp.com/getTags', {
       headers: {
         'Accept': 'application/json',
