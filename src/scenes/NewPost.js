@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { NavigationActions } from 'react-navigation';
 import {
   AppRegistry,
   View,
@@ -39,23 +40,32 @@ export default class CreatePost extends Component {
 
   handleFormSubmit() {
     try {
-      if (this.state.imagePath != 'http://thugify.com/wp-content/uploads/2016/08/placeholder.jpg') {
-        Database.writePost(
-          this.state.imagePath,
-          this.state.title,
-          this.state.description,
-          this.state.location,
-          this.state.portions,
-          this.state.price
-        );
-        this.props.navigation.navigate('Home')
-      } else {
-        alert('Por favor adjunte una imagen')
-      }
-
+      this.fetchTags().then(data => {
+        this.setState({ recTags: data });
+        const navigateAction = NavigationActions.navigate({
+        routeName: 'Tags',
+        params: {imagePath:this.state.imagePath,
+                  title:this.state.title,
+                  description:this.state.description,
+                  location: this.state.location,
+                  portions: this.state.prtions,
+                  price:this.state.portions,
+                  recTags: this.state.recTags}
+        })
+        if (this.state.imagePath != 'http://thugify.com/wp-content/uploads/2016/08/placeholder.jpg') {
+          this.props.navigation.dispatch(navigateAction)
+        } else {
+          alert('Por favor adjunte una imagen')
+        }
+      });
     } catch (error) {
       console.error('Error: ', error);
     }
+  }
+
+  async fetchTags() {
+    var data = await Database.getRecommendedTags(this.state.description);
+    return data;
   }
 
   openImage() {
