@@ -21,7 +21,7 @@ export default class Navbar extends Component {
             activeOpacity={0.7}
             onPress={this.props.onpressLeft}
           >
-            <Icon name={this.props.iconLeft} size={32} color='#FFF' />
+            <Icon name={this.props.iconLeft} size={30} color='#FFF' />
           </TouchableOpacity>
         </View>
         <View style={[styles.buttonContainer, { marginRight: 5 }]}>
@@ -30,7 +30,7 @@ export default class Navbar extends Component {
             activeOpacity={0.7}
             onPress={this.props.onpressRight}
           >
-            <Icon name={this.props.iconRight} size={32} color='#FFF' />
+            <Icon name={this.props.iconRight} size={30} color='#FFF' />
           </TouchableOpacity>
         </View>
       </View>

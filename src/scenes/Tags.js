@@ -31,29 +31,26 @@ export default class TagsScene extends Component {
   componentWillMount() {
     tagList = this.props.navigation.state.params.recTags;
     defTags = ["almuerzo express",
-                "arepas y empanadas",
-                "carnes y parrillas",
-                "arabe",
-                "asiatica",
-                "china",
-                "colombiana",
-                "mar",
-                "italiana",
-                "mexicana",
-                "desayunos",
-                "hamburguesas",
-                "perritos calientes",
-                "pizza",
-                "sanduches",
-                "sushi",
-                "sopas",
-                "vegetariano"]
+      "arepas y empanadas",
+      "carnes y parrillas",
+      "arabe",
+      "asiatica",
+      "china",
+      "colombiana",
+      "mar",
+      "italiana",
+      "mexicana",
+      "desayunos",
+      "hamburguesas",
+      "perritos calientes",
+      "pizza",
+      "sanduches",
+      "sushi",
+      "sopas",
+      "vegetariano"]
     othTags = this.sym(defTags, tagList)
-    this.setState({othTags : othTags})
-
-    this.setState({tagList: tagList});
     finalList = [];
-    this.setState({finalList : finalList});
+    this.setState({ othTags, tagList, finalList })
   }
 
   handleFormSubmit() {
@@ -74,10 +71,10 @@ export default class TagsScene extends Component {
   }
 
   sym(...arrays) {
-  return [].concat(arrays .
-    map((array, i) => array .
-      filter(elt => !arrays .
-        some((a, j) => i !== j && a.indexOf(elt) >= 0))))[0];
+    return [].concat(arrays.
+      map((array, i) => array.
+        filter(elt => !arrays.
+          some((a, j) => i !== j && a.indexOf(elt) >= 0))))[0];
   }
 
   formatTags = (tagList) => {
@@ -98,20 +95,20 @@ export default class TagsScene extends Component {
     const tagRenderRec = tagsRec.map(tag => {
       return (
         <CheckBox
-         label = {tag.data.charAt(0).toUpperCase() + tag.data.slice(1)}
-         key = {tag.key}
-         checkboxStyle={styles.tagCheckBox}
-         onChange = {(checked) => {
-           tList = this.state.finalList;
-           if (checked){
-             tList.push(tag.data);
-           } else {
-             index = tList.indexOf(tag.data);
-             tList.splice(index, 1);
-           }
-           this.setState({finalList: tList})
-           console.log(this.state.finalList)
-         }}
+          label={tag.data.charAt(0).toUpperCase() + tag.data.slice(1)}
+          key={tag.key}
+          checkboxStyle={styles.tagCheckBox}
+          onChange={(checked) => {
+            tList = this.state.finalList;
+            if (checked) {
+              tList.push(tag.data);
+            } else {
+              index = tList.indexOf(tag.data);
+              tList.splice(index, 1);
+            }
+            this.setState({ finalList: tList })
+            console.log(this.state.finalList)
+          }}
 
         />
       )
@@ -119,20 +116,20 @@ export default class TagsScene extends Component {
     const tagRenderNoRec = tagsNoRec.map(tag => {
       return (
         <CheckBox
-         label = {tag.data.charAt(0).toUpperCase() + tag.data.slice(1)}
-         key = {tag.key}
-         checkboxStyle={styles.tagCheckBox}
-         onChange = {(checked) => {
-           tList = this.state.finalList;
-           if (checked){
-             tList.push(tag.data);
-           } else {
-             index = tList.indexOf(tag.data);
-             tList.splice(index, 1);
-           }
-           this.setState({finalList: tList})
-           console.log(this.state.finalList)
-         }}
+          label={tag.data.charAt(0).toUpperCase() + tag.data.slice(1)}
+          key={tag.key}
+          checkboxStyle={styles.tagCheckBox}
+          onChange={(checked) => {
+            tList = this.state.finalList;
+            if (checked) {
+              tList.push(tag.data);
+            } else {
+              index = tList.indexOf(tag.data);
+              tList.splice(index, 1);
+            }
+            this.setState({ finalList: tList })
+            console.log(this.state.finalList)
+          }}
 
         />
       )
@@ -149,20 +146,20 @@ export default class TagsScene extends Component {
           <View
             style={styles.tagContainer}>
             <Text
-            style={styles.titles}>
-            Help us find your post!
+              style={styles.titles}>
+              Help us find your post!
             </Text>
             <Text
-            style={styles.titles}>
-            Sugested tags
+              style={styles.titles}>
+              Sugested tags
             </Text>
           </View>
           {tagRenderRec}
           <View
             style={styles.tagContainer}>
             <Text
-            style={styles.titles}>
-            Other tags
+              style={styles.titles}>
+              Other tags
             </Text>
           </View>
           {tagRenderNoRec}
@@ -188,11 +185,11 @@ const styles = StyleSheet.create({
   },
   titles: {
     fontSize: 20,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     marginLeft: 20,
-    marginTop:20,
+    marginTop: 20,
   },
   tagCheckBox: {
-    marginLeft:20,
+    marginLeft: 20,
   }
 })

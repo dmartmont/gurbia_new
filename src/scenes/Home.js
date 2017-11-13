@@ -107,7 +107,8 @@ export default class HomeScene extends Component {
       )
     });
 
-    console.log('Recomendaciones', recommendations);
+    const renderRecommended = (recommendations.length !== 0);
+
     return (
       <View style={styles.container}>
         <Navbar
@@ -117,10 +118,10 @@ export default class HomeScene extends Component {
         />
         <ScrollView
           style={styles.postsList}>
-          <View style={styles.recommendationsContainer}>
+          {renderRecommended && <View style={styles.recommendationsContainer}>
             <View style={styles.titleContainer}>
               <Text style={styles.titleText}>
-                Some recommendations for you.
+                Recommended posts for you.
             </Text>
             </View>
             <ScrollView
@@ -128,7 +129,7 @@ export default class HomeScene extends Component {
             >
               {recommendationsComponents}
             </ScrollView>
-          </View>
+          </View>}
           {postsComponents}
         </ScrollView>
         <ActionButton

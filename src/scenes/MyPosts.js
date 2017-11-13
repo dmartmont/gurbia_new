@@ -66,16 +66,28 @@ export default class MyPostsScreen extends Component {
 
   render() {
     const posts = this.formatData();
-    console.log('Mis posts', posts);
-    const postsComponents = posts.map(data => {
-      return (
-        <PostSubscriptions
-          info={{ ...data.data }}
-          key={data.key}
-          navigation={this.props.navigation}
-        />
-      )
-    });
+    const postsComponent = (() => {
+      if (posts.length == 0) {
+        return (
+          <View style={{ backgroundColor: '#DDDDDD' }} >
+            <Text style={{ fontSize: 16, textAlign: 'center' }} >
+              You haven't posted anything yet.
+            </Text>
+          </View>
+        );
+      } else {
+        return posts.map(data => {
+          return (
+            <PostSubscriptions
+              info={{ ...data.data }}
+              key={data.key}
+              navigation={this.props.navigation}
+            />
+          )
+        });
+      }
+    })();
+
     return (
       <View style={styles.container}>
         <Navbar
@@ -84,7 +96,7 @@ export default class MyPostsScreen extends Component {
         />
         <ScrollView style={styles.postsList}>
           <List>
-            {postsComponents}
+            {postsComponent}
           </List>
         </ScrollView>
       </View>

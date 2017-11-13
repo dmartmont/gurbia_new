@@ -8,56 +8,101 @@ import {
   StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
-  TextInput
+  TextInput,
+  TouchableHighlight
 } from 'react-native';
 import {
-  FormLabel,
   FormInput,
-  Button
+  Button,
+  Icon
 } from 'react-native-elements';
 import ImagePicker from 'react-native-image-crop-picker';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
 
 import Navbar from './../components/Navbar';
 import Database from './../database/database';
+import { alignItemsMap } from 'react-native-action-button/shared';
 
 export default class CreatePost extends Component {
   constructor(props) {
     super(props)
-    this.navigate = this.navigate.bind(this);
-    this.handleFormSubmit = this.handleFormSubmit.bind(this)
-    this.state = { imagePath: '' }
+    this.state = {
+      imagePath: '',
+      allTags: ["almuerzo express",
+        "arepas y empanadas",
+        "carnes y parrillas",
+        "arabe",
+        "asiatica",
+        "china",
+        "colombiana",
+        "mar",
+        "italiana",
+        "mexicana",
+        "desayunos",
+        "hamburguesas",
+        "perritos calientes",
+        "pizza",
+        "sanduches",
+        "sushi",
+        "sopas",
+        "vegetariano"],
+      suggestedTags: [],
+      selectedTags: []
+    }
   }
-
 
   componentWillMount() {
-    this.setState({ imagePath: 'http://thugify.com/wp-content/uploads/2016/08/placeholder.jpg' })
+    this.setState({
+      imagePath: 'https://www.daysoutwithkids.com/images/addphoto.png',
+    })
   }
-  navigate(id) {
-    this.props.navigator.push({ id });
+
+  getSuggestedTags() {
+    this.fetchTags().then(data => {
+      console.log('All:', data);
+      let sug = new Set(data);
+      let sel = new Set(this.state.selectedTags);
+      let suggestedTags = Array.from(sug).filter((tag) => !sel.has(tag));
+      this.setState({ suggestedTags });
+    });
+  }
+
+  addSelectedTag(tag) {
+    let selected = new Set(this.state.selectedTags);
+    let suggested = new Set(this.state.suggestedTags);
+    selected.add(tag);
+    suggested.delete(tag);
+    let selectedTags = Array.from(selected);
+    let suggestedTags = Array.from(suggested);
+    this.setState({ selectedTags, suggestedTags });
+  }
+
+  removeSelectedTag(tag) {
+    let selected = new Set(this.state.selectedTags);
+    let suggested = new Set(this.state.suggestedTags);
+    selected.delete(tag);
+    suggested.add(tag);
+    let selectedTags = Array.from(selected);
+    let suggestedTags = Array.from(suggested);
+    this.setState({ selectedTags, suggestedTags });
   }
 
   handleFormSubmit() {
     try {
-      this.fetchTags().then(data => {
-        this.setState({ recTags: data });
-        const navigateAction = NavigationActions.navigate({
-        routeName: 'Tags',
-        params: {imagePath:this.state.imagePath,
-                  title:this.state.title,
-                  description:this.state.description,
-                  location: this.state.location,
-                  portions: this.state.portions,
-                  price:this.state.portions,
-                  recTags: this.state.recTags}
-        })
-        if (this.state.imagePath != 'http://thugify.com/wp-content/uploads/2016/08/placeholder.jpg') {
-          this.props.navigation.dispatch(navigateAction)
-        } else {
-          alert('Por favor adjunte una imagen')
-        }
-      });
+      if (this.state.imagePath != 'https://www.daysoutwithkids.com/images/addphoto.png') {
+        Database.writePost(
+          this.state.imagePath,
+          this.state.title,
+          this.state.description,
+          this.state.location,
+          this.state.portions,
+          this.state.price,
+          this.state.selectedTags
+        );
+        this.props.navigation.navigate('Home');
+      } else {
+        alert('Por favor adjunte una imagen')
+      }
     } catch (error) {
       console.error('Error: ', error);
     }
@@ -86,68 +131,140 @@ export default class CreatePost extends Component {
   }
 
   render() {
+    const sugTags = this.state.suggestedTags.map((data, key) => {
+      return (
+        <TouchableOpacity
+          key={key}
+          style={styles.chipContainer}
+          onPress={() => this.addSelectedTag(data)}
+        >
+          <Text style={styles.chipText}>
+            {data}
+          </Text>
+          <Icon
+            name='add'
+            color='#EEEEEE'
+            onPress={() => this.addSelectedTag(data)}
+            size={18}
+            containerStyle={{ marginLeft: 5, backgroundColor: '#8BC34A', borderRadius: 25 }}
+          />
+        </TouchableOpacity>
+      );
+    });
+
+    const selTags = this.state.selectedTags.map((data, key) => {
+      return (
+        <TouchableOpacity
+          key={key}
+          style={styles.chipContainer}
+          onPress={() => this.removeSelectedTag(data)}
+        >
+          <Text style={styles.chipText}>
+            {data}
+          </Text>
+          <Icon
+            name='close'
+            color='#EEEEEE'
+            onPress={() => this.removeSelectedTag(data)}
+            size={18}
+            containerStyle={{ marginLeft: 5, backgroundColor: '#ef5350', borderRadius: 25 }}
+          />
+        </TouchableOpacity>
+      );
+    });
+
+    const sugTagsComponent = (() => {
+      if (sugTags.length === 0) {
+        return (
+          <Text style={{ fontSize: 15, padding: 10 }} >
+            No suggested tags
+          </Text>
+        );
+      } else {
+        return (
+          <View style={styles.suggestedContainer}>
+            {sugTags}
+          </View>);
+      }
+    })();
+
     return (
       <View style={styles.createContainer}>
         <Navbar
           onpressLeft={() => { this.props.navigation.goBack() }}
           iconLeft='close'
+          onpressRight={() => this.handleFormSubmit()}
+          iconRight='send'
         />
-        <KeyboardAvoidingView
-          behavior='position'
+        <View
           style={styles.container}>
           <View style={styles.imageContainer}>
-            <Image
-              style={styles.image}
-              source={{ uri: this.state.imagePath }}
-            />
-            <ActionButton
-              buttonColor='rgba(255, 87, 34, 1)'
-              onPress={() => this.openImage()}
-              offsetX={75}
-              offsetY={0}
-            />
+            <TouchableOpacity onPress={() => this.openImage()}>
+              <Image
+                style={styles.image}
+                source={{ uri: this.state.imagePath }}
+              />
+            </ TouchableOpacity>
+            <View style={styles.titleContainer}>
+              <FormInput
+                onChangeText={(title) => this.setState({ title })}
+                placeholder='Title'
+                autoCorrect={true}
+                autoCapitalize='sentences'
+              />
+            </View>
           </View>
-          <View
-            style={styles.formContainer}>
-            <FormLabel>Title</FormLabel>
-            <FormInput
-              onChangeText={(title) => this.setState({ title })}
-              placeholder='Title'
-            />
-            <FormLabel>Description</FormLabel>
+          <View style={styles.formContainer}>
             <FormInput
               onChangeText={(description) => this.setState({ description })}
+              onEndEditing={() => this.getSuggestedTags()}
               placeholder='Description'
+              autoCorrect={true}
+              autoCapitalize='sentences'
             />
-            <FormLabel>Location</FormLabel>
             <FormInput
               onChangeText={(location) => this.setState({ location })}
               placeholder='Location'
+              autoCorrect={true}
+              autoCapitalize='sentences'
             />
             <View style={styles.horizontalAlign}>
               <View style={styles.inputContainer}>
-                <FormLabel>Portions</FormLabel>
                 <FormInput
                   onChangeText={(portions) => this.setState({ portions })}
                   placeholder='Portions'
+                  autoCorrect={true}
+                  autoCapitalize='sentences'
+                  inputStyle={{ marginLeft: 0 }}
                 />
               </View>
               <View style={styles.inputContainer}>
-                <FormLabel>Price</FormLabel>
                 <FormInput
                   onChangeText={(price) => this.setState({ price })}
                   placeholder='Price'
+                  autoCorrect={true}
+                  autoCapitalize='sentences'
+                  inputStyle={{ marginLeft: 0 }}
                 />
               </View>
             </View>
           </View>
-          <Button
-            raised
-            onPress={() => this.handleFormSubmit()}
-            title='SUBMIT'
-            backgroundColor='#FF5722'
-          />
-        </KeyboardAvoidingView>
+          <View style={styles.tagsContainer} >
+            <View style={styles.selectedContainer}>
+              {selTags}
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View style={{ flexDirection: 'row' }} >
+                <Icon
+                  name='tags'
+                  type='font-awesome'
+                  size={23} />
+                <Text style={{ fontSize: 17, color: '#212121' }} >   Suggested tags</Text>
+              </View>
+            </View>
+            {sugTagsComponent}
+          </View>
+        </View>
       </View>
     )
   }
@@ -160,20 +277,25 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    justifyContent: 'flex-start',
+    padding: 5,
   },
   formContainer: {
     justifyContent: 'center',
     alignItems: 'stretch',
-    backgroundColor: '#fff',
   },
   imageContainer: {
-    backgroundColor: '#CDCDCD'
+    flexDirection: 'row',
+    padding: 5
   },
   image: {
-    height: 200,
-    width: 200,
-    alignSelf: 'center',
+    height: 80,
+    width: 80,
     padding: 10,
+    borderRadius: 5
+  },
+  titleContainer: {
+    flexDirection: 'column',
   },
   addButtonContainer: {
     alignItems: 'center',
@@ -188,9 +310,42 @@ const styles = StyleSheet.create({
   horizontalAlign: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around'
+    justifyContent: 'flex-start'
   },
   inputContainer: {
     width: 150,
+  },
+  tagsContainer: {
+    margin: 10,
+    padding: 5,
+    bottom: 5
+  },
+  suggestedContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 5
+  },
+  selectedContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  chipContainer: {
+    borderRadius: 25,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 32,
+    backgroundColor: '#EEEEEE',
+    paddingLeft: 12,
+    paddingRight: 8,
+    marginRight: 5,
+    marginBottom: 5
+  },
+  chipText: {
+    color: '#424242',
+    fontSize: 17,
+    textAlign: 'center'
   }
 })

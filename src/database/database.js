@@ -94,19 +94,6 @@ export default class Database {
         });
         firebase.database().ref().update(updates);
       });
-
-      let response = await fetch('https://backgurbia.herokuapp.com/addListOfTags', {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          list: tags
-        })
-      }).catch(err => {
-        console.error(err);
-      });
   }
 
   static async getSuggestedTags(description) {
@@ -318,22 +305,6 @@ export default class Database {
       method: 'POST',
       body: JSON.stringify({
         description: description
-      })
-    }).catch(err => {
-      console.error(err);
-    });
-    return JSON.parse(response._bodyText).tags;
-  }
-
-  static async getSimilarTags(tags) {
-    var response = await fetch('https://backgurbia.herokuapp.com/getSimilarTags', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        list: tags
       })
     }).catch(err => {
       console.error(err);
