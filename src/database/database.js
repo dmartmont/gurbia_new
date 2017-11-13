@@ -68,7 +68,7 @@ export default class Database {
     })
   }
 
-  static writePost(picture, title, description, location, portions, price, tags) {
+  static async writePost(picture, title, description, location, portions, price, tags) {
     this.uploadImage(picture, 'Food')
       .then(res => {
         var user = firebase.auth().currentUser;
