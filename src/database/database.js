@@ -90,7 +90,7 @@ export default class Database {
 
         updates['user-posts/' + user.uid + '/' + newPostKey] = postData;
         tags.forEach(tag => {
-          updates['posts-by-tags/' + tag] = postData
+          updates['posts-by-tags/' + tag + '/' + newPostKey] = postData
         });
         firebase.database().ref().update(updates);
       });
@@ -286,7 +286,7 @@ export default class Database {
   static getPostsByTag(tag) {
     var posts = [];
     return new Promise((resolve, reject) => {
-      firebase.database().ref('posts/' + tag).limitToLast(20)
+      firebase.database().ref('posts-by-tags/' + tag).limitToLast(20)
         .once('value').then((data) => {
           resolve(data.val());
         }).catch(error => {

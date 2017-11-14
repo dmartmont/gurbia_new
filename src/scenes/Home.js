@@ -35,6 +35,7 @@ export default class HomeScene extends Component {
 
   componentWillMount() {
     this.fetchPosts().then(data => {
+      console.log(data);
       this.setState({
         data: data
       });
@@ -82,6 +83,7 @@ export default class HomeScene extends Component {
 
   render() {
     const posts = this.formatData();
+    console.log('Lista:', posts);
     const recommendations = this.formatRecommendations();
 
     const postsComponents = posts.map(data => {
@@ -114,6 +116,7 @@ export default class HomeScene extends Component {
         <Navbar
           onpressLeft={() => this.props.navigation.navigate('DrawerOpen')}
           iconLeft='menu'
+          onpressRight={() => this.props.navigation.navigate('Search')}
           iconRight='search'
         />
         <ScrollView
