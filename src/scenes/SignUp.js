@@ -67,7 +67,7 @@ export default class SignUpScreen extends React.Component {
         this.props.screenProps.rootNavigation.dispatch(resetAction);
       }
     } catch (err) {
-      alert('Error creando usuario', err);
+      console.log(err);
     }
   }
 

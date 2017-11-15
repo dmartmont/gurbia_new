@@ -183,7 +183,7 @@ export default class Database {
   static getPosts() {
     var posts = [];
     return new Promise((resolve, reject) => {
-      firebase.database().ref('posts').limitToLast(20)
+      firebase.database().ref('posts').limitToLast(40)
         .once('value').then((data) => {
           resolve(data.val());
         }).catch(error => {
