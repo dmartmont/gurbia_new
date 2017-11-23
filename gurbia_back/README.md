@@ -19,9 +19,9 @@ Se desarrolló un servidor con Express para los servicios cognitivos de la aplic
 * ### Iniciar la ejecución
     Poner a correr la aplicación
     ```bash
-    yarn start
+    $ yarn start
     ```
     (Opcional) Ejecutar el servidor en background 
     ```bash
-    pm2 src/app.js
+    $ pm2 src/app.js
     ```
