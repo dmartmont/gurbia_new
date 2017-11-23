@@ -1,0 +1,22 @@
+{
+  "name": "Gurbia-Recommendations",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">= 7.6.0"
+  },
+  "description": "Recommendations api for our gurbia app",
+  "main": "app.js",
+  "repository": "https://sadstudios.visualstudio.com/_git/Gurbia%20Recommendations",
+  "author": "dmedina7@eafit.edu.co",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.1",
+    "express": "^4.15.4",
+    "firebase": "^4.3.1",
+    "natural": "^0.5.4",
+    "raccoon": "^0.2.8"
+  }
+}
